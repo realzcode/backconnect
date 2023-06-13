@@ -1,7 +1,7 @@
 const net = require('net');
 const os = require('os');
 
-const we = `
+let we = `
   _____            _      _____          _      
  |  __ \\          | |    / ____|        | |     
  | |__) |___  __ _| |___| |     ___   __| | ___ 
