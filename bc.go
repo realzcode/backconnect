@@ -19,7 +19,7 @@ func main() {
 `
 
 	po := 13377 // nc -l -p 13377
-	clientIP, _ := net.LookupIP("localhost") // You might need to modify this to get the actual client IP
+	clientIP, _ := os.Args[1]
 
 	we += fmt.Sprintf("Client IP: %s\n", clientIP)
 
