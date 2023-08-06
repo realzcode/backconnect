@@ -42,7 +42,9 @@ if ($errno != 0) {
                 fclose($sock);
                 exit();
             } else {
-                $output = shell_exec($cmd);
+                $open = popen($cmd . " 2>&1", "r");
+                $output = fread($open, $po);
+                pclose($open);
             }
             
             fwrite($sock, $output);
